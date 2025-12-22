@@ -1,10 +1,12 @@
-type MatchCallback = (el: HTMLDivElement) => void;
+type WarnCallback = (message: string) => () => void;
+type MatchCallback = (el: HTMLDivElement, warn: WarnCallback) => void;
 
 interface ObserverOptions {
   onMatch?: MatchCallback;
   uuidGate?: boolean;
   zNearMax?: number;
   debug?: boolean;
+  removeHoney?: boolean;
 }
 
 interface ObserverHandle {
@@ -18,6 +20,39 @@ interface ListenHandle {
 const DEFAULT_Z_NEAR_MAX = 2147480000;
 const UUIDISH_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const TARGET_SELECTOR = "div[id]";
+const OVERLAY_STYLE_ID = "simple-overlay-styles";
+
+function showOverlay(message: string): () => void {
+  if (typeof document === "undefined") return () => {};
+
+  if (!document.getElementById(OVERLAY_STYLE_ID)) {
+    const style = document.createElement("style");
+    style.id = OVERLAY_STYLE_ID;
+    style.textContent =
+      ".simple-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999999;display:flex;align-items:center;justify-content:center;pointer-events:all;}" +
+      ".simple-overlay-message{background:#ffffff;padding:16px 20px;border-radius:8px;font-size:14px;max-width:80%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.3);}";
+    document.head.appendChild(style);
+  }
+
+  const overlay = document.createElement("div");
+  overlay.className = "simple-overlay";
+  const messageEl = document.createElement("div");
+  messageEl.className = "simple-overlay-message";
+  messageEl.innerHTML = message;
+  overlay.appendChild(messageEl);
+
+  if (document.body) {
+    document.body.appendChild(overlay);
+  }
+
+  const prevOverflow = document.body ? document.body.style.overflow : "";
+  if (document.body) document.body.style.overflow = "hidden";
+
+  return function hideOverlay() {
+    overlay.remove();
+    if (document.body) document.body.style.overflow = prevOverflow;
+  };
+}
 
 function parseZIndex(cs: CSSStyleDeclaration, el: HTMLElement): number | null {
   const computed = parseInt(cs.zIndex, 10);
@@ -67,12 +102,15 @@ function scanElement(
   zNearMax: number,
   uuidGate: boolean,
   debug: boolean,
-  onMatch: MatchCallback
+  removeHoney: boolean,
+  onMatch: MatchCallback,
+  warn: WarnCallback
 ): void {
   if (el instanceof HTMLDivElement && el.matches(TARGET_SELECTOR)) {
     if (seen.indexOf(el) === -1 && looksLikeTargetDiv(el, zNearMax, uuidGate, debug)) {
       seen.push(el);
-      onMatch(el);
+      if (removeHoney && el.parentNode) el.parentNode.removeChild(el);
+      onMatch(el, warn);
     }
   }
 
@@ -82,7 +120,8 @@ function scanElement(
     const d = divs[i] as HTMLDivElement;
     if (seen.indexOf(d) === -1 && looksLikeTargetDiv(d, zNearMax, uuidGate, debug)) {
       seen.push(d);
-      onMatch(d);
+      if (removeHoney && d.parentNode) d.parentNode.removeChild(d);
+      onMatch(d, warn);
     }
   }
 }
@@ -92,6 +131,8 @@ function startHoneyOverlayObserver(options: ObserverOptions = {}): ObserverHandl
   const zNearMax = options.zNearMax ?? DEFAULT_Z_NEAR_MAX;
   const uuidGate = options.uuidGate ?? true;
   const debug = options.debug ?? false;
+  const removeHoney = options.removeHoney ?? true;
+  const warn: WarnCallback = (message) => showOverlay(message);
   const onMatch =
     options.onMatch ??
     (() => {});
@@ -112,16 +153,16 @@ function startHoneyOverlayObserver(options: ObserverOptions = {}): ObserverHandl
           for (let i = 0; i < m.addedNodes.length; i += 1) {
             const node = m.addedNodes[i];
             if (node.nodeType === Node.ELEMENT_NODE) {
-              scanElement(node as Element, seen, zNearMax, uuidGate, debug, onMatch);
+              scanElement(node as Element, seen, zNearMax, uuidGate, debug, removeHoney, onMatch, warn);
             }
           }
         }
         if (m.target instanceof Element) {
-          scanElement(m.target, seen, zNearMax, uuidGate, debug, onMatch);
+          scanElement(m.target, seen, zNearMax, uuidGate, debug, removeHoney, onMatch, warn);
         }
       } else if (m.type === "attributes") {
         if (m.target instanceof Element) {
-          scanElement(m.target, seen, zNearMax, uuidGate, debug, onMatch);
+          scanElement(m.target, seen, zNearMax, uuidGate, debug, removeHoney, onMatch, warn);
         }
       }
     }
@@ -134,7 +175,7 @@ function startHoneyOverlayObserver(options: ObserverOptions = {}): ObserverHandl
     attributeFilter: ["style", "class", "id"]
   });
 
-  scanElement(document.documentElement, seen, zNearMax, uuidGate, debug, onMatch);
+  scanElement(document.documentElement, seen, zNearMax, uuidGate, debug, removeHoney, onMatch, warn);
 
   return {
     stop: () => mo.disconnect()

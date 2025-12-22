@@ -32,3 +32,13 @@ listen((el) => {
   console.log("Honey overlay detected:", el);
 });
 ```
+
+## Advanced Options
+
+```js
+window.fckHoney.listen((el, warn) => {
+  // Optional: the element is removed automatically by default.
+  // warn() shows a built-in overlay message (returns a hide function).
+  warn("You must disable the Honey extension to continue.");
+}, { removeHoney: true });
+```
