@@ -1,6 +1,9 @@
 # fck-honey
 Open source lib for Merchants to detect if an end user has Honey browser extension installed
 
+## Inspiration
+[MegaLag exposed Honey as a scam](https://www.youtube.com/watch?v=wwB3FmbcC88)
+
 ## Install (jsDelivr)
 
 ```html
