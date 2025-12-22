@@ -4,6 +4,7 @@ interface ObserverOptions {
   onMatch?: MatchCallback;
   uuidGate?: boolean;
   zNearMax?: number;
+  debug?: boolean;
 }
 
 interface ObserverHandle {
@@ -26,16 +27,37 @@ function parseZIndex(cs: CSSStyleDeclaration, el: HTMLElement): number | null {
   return isFinite(inline) ? inline : null;
 }
 
-function looksLikeTargetDiv(el: HTMLDivElement, zNearMax: number, uuidGate: boolean): boolean {
-  if (!el.id) return false;
-  if (uuidGate && !UUIDISH_RE.test(el.id)) return false;
+function looksLikeTargetDiv(
+  el: HTMLDivElement,
+  zNearMax: number,
+  uuidGate: boolean,
+  debug: boolean
+): boolean {
+  if (!el.id) {
+    if (debug) console.log("+++ reject: no id", el);
+    return false;
+  }
+  if (uuidGate && !UUIDISH_RE.test(el.id)) {
+    if (debug) console.log("+++ reject: uuid", el.id);
+    return false;
+  }
 
   const cs = getComputedStyle(el);
   const z = parseZIndex(cs, el);
-  if (z === null || z < zNearMax) return false;
-  if (cs.display === "none") return false;
-  if (el.shadowRoot) return false;
+  if (z === null || z < zNearMax) {
+    if (debug) console.log("+++ reject: z-index", z, cs.zIndex, el.style.zIndex, el);
+    return false;
+  }
+  if (cs.display === "none") {
+    if (debug) console.log("+++ reject: display none", el);
+    return false;
+  }
+  if (el.shadowRoot) {
+    if (debug) console.log("+++ reject: shadowRoot", el);
+    return false;
+  }
 
+  if (debug) console.log("+++ match", el);
   return true;
 }
 
@@ -44,10 +66,11 @@ function scanElement(
   seen: HTMLDivElement[],
   zNearMax: number,
   uuidGate: boolean,
+  debug: boolean,
   onMatch: MatchCallback
 ): void {
   if (el instanceof HTMLDivElement && el.matches(TARGET_SELECTOR)) {
-    if (seen.indexOf(el) === -1 && looksLikeTargetDiv(el, zNearMax, uuidGate)) {
+    if (seen.indexOf(el) === -1 && looksLikeTargetDiv(el, zNearMax, uuidGate, debug)) {
       seen.push(el);
       onMatch(el);
     }
@@ -57,7 +80,7 @@ function scanElement(
   if (!divs) return;
   for (let i = 0; i < divs.length; i += 1) {
     const d = divs[i] as HTMLDivElement;
-    if (seen.indexOf(d) === -1 && looksLikeTargetDiv(d, zNearMax, uuidGate)) {
+    if (seen.indexOf(d) === -1 && looksLikeTargetDiv(d, zNearMax, uuidGate, debug)) {
       seen.push(d);
       onMatch(d);
     }
@@ -68,13 +91,17 @@ function startHoneyOverlayObserver(options: ObserverOptions = {}): ObserverHandl
   const seen: HTMLDivElement[] = [];
   const zNearMax = options.zNearMax ?? DEFAULT_Z_NEAR_MAX;
   const uuidGate = options.uuidGate ?? true;
+  const debug = options.debug ?? false;
   const onMatch =
     options.onMatch ??
     (() => {});
 
   const mo = new MutationObserver((mutations) => {
     for (const m of mutations) {
-      if (m.target === document.body || (m.target instanceof Node && document.body.contains(m.target))) {
+      if (
+        debug &&
+        (m.target === document.body || (m.target instanceof Node && document.body.contains(m.target)))
+      ) {
         console.log("+++ body mutation", m.type, m.target);
       }
     }
@@ -84,15 +111,16 @@ function startHoneyOverlayObserver(options: ObserverOptions = {}): ObserverHandl
           for (let i = 0; i < m.addedNodes.length; i += 1) {
             const node = m.addedNodes[i];
             if (node.nodeType === Node.ELEMENT_NODE) {
-              scanElement(node as Element, seen, zNearMax, uuidGate, onMatch);
+              scanElement(node as Element, seen, zNearMax, uuidGate, debug, onMatch);
             }
           }
-        } else if (m.target instanceof Element) {
-          scanElement(m.target, seen, zNearMax, uuidGate, onMatch);
+        }
+        if (m.target instanceof Element) {
+          scanElement(m.target, seen, zNearMax, uuidGate, debug, onMatch);
         }
       } else if (m.type === "attributes") {
         if (m.target instanceof Element) {
-          scanElement(m.target, seen, zNearMax, uuidGate, onMatch);
+          scanElement(m.target, seen, zNearMax, uuidGate, debug, onMatch);
         }
       }
     }
@@ -105,7 +133,7 @@ function startHoneyOverlayObserver(options: ObserverOptions = {}): ObserverHandl
     attributeFilter: ["style", "class", "id"]
   });
 
-  scanElement(document.documentElement, seen, zNearMax, uuidGate, onMatch);
+  scanElement(document.documentElement, seen, zNearMax, uuidGate, debug, onMatch);
 
   return {
     stop: () => mo.disconnect()

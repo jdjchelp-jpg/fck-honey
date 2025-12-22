@@ -7,7 +7,7 @@ Open source lib for Merchants to detect if an end user has Honey browser extensi
 ## Usage (Browser Global)
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/fck-honey@0.1/dist/honey-detect.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fck-honey"></script>
 <script>
   window.fckHoney.listen((el) => {
     // Decide how you want to handle this.

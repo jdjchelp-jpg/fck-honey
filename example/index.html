@@ -121,10 +121,11 @@
 
       const handle = window.fckHoney.listen((el) => {
         log("Matched overlay: #" + el.id + " z-index " + getComputedStyle(el).zIndex);
-        if (modal) modal.style.display = "flex";
+        const liveModal = document.getElementById("honey-modal") || modal;
+        if (liveModal) liveModal.style.display = "flex";
         detectionCount += 1;
         if (debugEl) debugEl.textContent = "Detections: " + detectionCount;
-      });
+      }, { debug: true });
 
       function makeOverlay() {
         const id = crypto.randomUUID ? crypto.randomUUID() : "00000000-0000-0000-0000-000000000000";
