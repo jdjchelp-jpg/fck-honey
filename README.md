@@ -1,6 +1,5 @@
 # fck-honey
-
-Detects Honey browser extension overlays so merchants can respond in real time.
+Open source lib for Merchants to detect if an end user has Honey browser extension installed
 
 ## Install (jsDelivr)
 
