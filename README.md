@@ -16,7 +16,7 @@ Install this at the very top of the `<head>` in your webpage to ensure it runs p
 ## Custom Usage (Browser Global)
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/coupon-shield@latest/dist/couponshield.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/coupon-shield@latest/dist/couponshield.min.js"></script>
 <script>
 window.couponShield.listen((warn, el, vendor) => {
     // Decide how you want to handle this. Native warn function allows you to tell the user to disable Honey.
