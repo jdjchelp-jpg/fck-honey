@@ -8,16 +8,17 @@ Tool for eComm merchants to detect, warn and prevent a customer from shopping us
 This will automatically listen for Honey and show a default warning to the user to disable the extension as shown above).
 
 Install this at the very top of the `<head>` in your webpage to ensure it runs prior to Honey.
+[jsDelivr package page](https://www.jsdelivr.com/package/npm/coupon-shield).
 ```html
-<script src="https://cdn.jsdelivr.net/npm/fck-honey@latest/dist/auto.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/coupon-shield@latest/dist/auto.min.js"></script>
 ```
 
 ## Custom Usage (Browser Global)
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/fck-honey@latest/dist/honey-detect.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/coupon-shield@latest/dist/couponshield.js"></script>
 <script>
-window.fckHoney.listen((warn, el, vendor) => {
+window.couponShield.listen((warn, el, vendor) => {
     // Decide how you want to handle this. Native warn function allows you to tell the user to disable Honey.
     // vendor is "honey", "Capital One Shopping", or "Rakuten"
     warn("You must disable the Honey extension to continue.");
@@ -28,11 +29,11 @@ window.fckHoney.listen((warn, el, vendor) => {
 ## Custom Usage (ESM)
 
 ```sh
-npm install fck-honey
+npm install coupon-shield
 ```
 
 ```js
-import { listen } from "fck-honey";
+import { listen } from "coupon-shield";
 
 listen((warn, el, vendor) => {
   // Decide how you want to handle this. Native warn function allows you to tell the user to disable Honey.
@@ -44,7 +45,7 @@ listen((warn, el, vendor) => {
 ## Advanced Options
 
 ```js
-window.fckHoney.listen((warn, el, vendor) => {
+window.couponShield.listen((warn, el, vendor) => {
   // removeHoney defaults to true (element is auto-removed).
   // Set removeHoney to false if you want to keep the Honey element for some reason.
   // vendor is "honey", "Capital One Shopping", or "Rakuten"
@@ -52,7 +53,7 @@ window.fckHoney.listen((warn, el, vendor) => {
 ```
 
 ```js
-window.fckHoney.listen((warn) => {
+window.couponShield.listen((warn) => {
   // Stop observing if nothing is detected within 10 seconds.
 }, { unbindAfterSeconds: 10 });
 ```

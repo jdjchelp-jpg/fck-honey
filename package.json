@@ -1,24 +1,24 @@
 {
-  "name": "fck-honey",
-  "version": "0.3.10",
+  "name": "coupon-shield",
+  "version": "0.3.11",
   "description": "Detects Honey browser extension overlays for merchants.",
   "license": "MIT",
-  "main": "dist/honey-detect.js",
+  "main": "dist/couponshield.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
-      "default": "./dist/honey-detect.js"
+      "default": "./dist/couponshield.js"
     }
   },
-  "jsdelivr": "dist/honey-detect.js",
+  "jsdelivr": "dist/couponshield.js",
   "files": [
     "dist"
   ],
   "scripts": {
     "prebuild": "node scripts/write-version.cjs",
-    "build": "tsc -p tsconfig.esm.json && tsc -p tsconfig.bundle.json && esbuild dist/bundle-tmp/global.js --bundle --format=iife --platform=browser --target=es5 --outfile=dist/honey-detect.js && esbuild dist/bundle-tmp/auto.js --bundle --format=iife --platform=browser --target=es5 --outfile=dist/auto.js",
+    "build": "tsc -p tsconfig.esm.json && tsc -p tsconfig.bundle.json && esbuild dist/bundle-tmp/global.js --bundle --format=iife --platform=browser --target=es5 --outfile=dist/couponshield.js && esbuild dist/bundle-tmp/auto.js --bundle --format=iife --platform=browser --target=es5 --outfile=dist/auto.js",
     "prepublishOnly": "npm run build && node scripts/check-version.cjs",
     "clean": "rm -rf dist"
   },

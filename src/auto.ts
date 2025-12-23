@@ -23,11 +23,11 @@ function buildAutoModalHtml(vendor: string): string {
 }
 
 if (typeof window !== "undefined") {
-  window.fckHoney = window.fckHoney || {};
-  window.fckHoney.listen = listen;
-  window.fckHoney.version = version;
+  window.couponShield = window.couponShield || {};
+  window.couponShield.listen = listen;
+  window.couponShield.version = version;
 
-  window.fckHoneyHandle = window.fckHoney.listen((warn, _el, vendor) => {
+  window.couponShieldHandle = window.couponShield.listen((warn, _el, vendor) => {
     const vendorName = vendor || "honey";
     const vendorLabel = vendorName.charAt(0).toUpperCase() + vendorName.slice(1);
     warn(buildAutoModalHtml(vendorLabel));
@@ -36,10 +36,10 @@ if (typeof window !== "undefined") {
 
 declare global {
   interface Window {
-    fckHoney?: {
+    couponShield?: {
       listen?: typeof listen;
       version?: string;
     };
-    fckHoneyHandle?: ReturnType<typeof listen>;
+    couponShieldHandle?: ReturnType<typeof listen>;
   }
 }

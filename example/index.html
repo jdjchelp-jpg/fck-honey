@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>fck-honey test page</title>
-    <script src="../dist/honey-detect.js"></script>
+    <title>coupon-shield test page</title>
+    <script src="../dist/couponshield.js"></script>
     <script>
       let detectionCount = 0;
 
@@ -33,7 +33,7 @@
         if (logEl) logEl.textContent += msg + "\n";
       }
 
-      window.fckHoneyHandle = window.fckHoney.listen((warn, el, vendor) => {
+      window.couponShieldHandle = window.couponShield.listen((warn, el, vendor) => {
           log("Matched overlay: #" + el.id + " z-index " + getComputedStyle(el).zIndex);
           warn(buildAutoModalHtml(vendor || "honey"));
           detectionCount += 1;
@@ -65,7 +65,7 @@
     </style>
   </head>
   <body>
-    <h1>fck-honey demo</h1>
+    <h1>coupon-shield demo</h1>
     <p>Build first: <code>npm run build</code>. Then open this file in a browser.</p>
     <button id="spawn">Simulate Honey initialization</button>
     <button id="spawn-capitalone">Simulate Capital One</button>
