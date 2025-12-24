@@ -3,7 +3,7 @@ Tool for eComm merchants to detect, warn and prevent a customer from shopping us
 <br /><br />[View the  Demo video here 🎥](https://youtu.be/Em9Fjil8Xds).
 <br />[Inspired by MegaLag's "Exposing the Honey Influencer Scam" 🎥](https://www.youtube.com/watch?v=wwB3FmbcC88)
 
-<img width="1307" height="561" alt="image" src="https://github.com/user-attachments/assets/33b2554b-fc90-4b4b-b917-4ed088664200" />
+<img width="880" height="618" alt="image" src="https://github.com/user-attachments/assets/aa777c9b-d8f7-4051-a85b-57fd749f9858" />
 
 ## Easy install (no-JS)
 This will automatically detect a coupon extension and show a default warning to the user to disable the extension as shown above). Install this at the very top of the `<head>` in your webpage to ensure it runs prior to the extension.
