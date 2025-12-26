@@ -19,7 +19,7 @@ This will automatically detect a coupon extension and show a default warning to 
 <script>
 window.couponShield.listen((warn, vendor) => {
     // Decide how you want to handle this. Native warn function allows you to tell the user to disable the extension.
-    // vendor is "honey", "Capital One Shopping", or "Rakuten"
+    // vendor is "honey", "Capital One Shopping", "Rakuten", or "Klarna"
     warn("You must disable the Honey extension to continue.");
   });
 </script>
@@ -36,7 +36,7 @@ import { listen } from "coupon-shield";
 
 listen((warn, vendor) => {
   // Decide how you want to handle this. Native warn function allows you to tell the user to disable the extension.
-  // vendor is "honey", "Capital One Shopping", or "Rakuten"
+  // vendor is "honey", "Capital One Shopping", "Rakuten", or "Klarna"
   warn("You must disable the Honey extension to continue.");
 });
 ```
@@ -48,7 +48,7 @@ window.couponShield.listen((warn, vendor, el) => {
   // removePageElement defaults to true (extension element loaded onto the page is auto-removed).
   // Set removePageElement to false if you want to keep the extension element for some reason.
   // el is only defined when removePageElement is false.
-  // vendor is "honey", "Capital One Shopping", or "Rakuten"
+  // vendor is "honey", "Capital One Shopping", "Rakuten", or "Klarna"
 }, { removePageElement: false });
 ```
 
@@ -57,4 +57,3 @@ window.couponShield.listen((warn, vendor) => {
   // Stop observing if nothing is detected within 10 seconds.
 }, { unbindAfterSeconds: 10 });
 ```
-

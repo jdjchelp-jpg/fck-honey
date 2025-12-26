@@ -2,7 +2,7 @@ import { VERSION } from "./version";
 
 export const version = VERSION;
 export type WarnCallback = (message: string) => () => void;
-export type DetectedVendor = "honey" | "Capital One Shopping" | "Rakuten";
+export type DetectedVendor = "honey" | "Capital One Shopping" | "Rakuten" | "Klarna";
 export type MatchCallback = (warn: WarnCallback, vendor?: DetectedVendor, el?: HTMLDivElement) => void;
 
 export interface ObserverOptions {
@@ -164,6 +164,20 @@ const VENDOR_MATCHERS: VendorMatcher[] = [
       const style = el.shadowRoot.querySelector("style#rr-style-content");
       if (!style) {
         if (debug) console.log("+++ reject: no rr-style-content", el);
+        return false;
+      }
+      return true;
+    }
+  },
+  {
+    name: "Klarna",
+    matches: (el, _zNearMax, _uuidGate, debug) => {
+      if (!el.hasAttribute("data-klarna-plugin-views-container")) {
+        if (debug) console.log("+++ reject: no klarna container", el);
+        return false;
+      }
+      if (el.parentElement !== document.documentElement) {
+        if (debug) console.log("+++ reject: klarna not under html", el.parentElement);
         return false;
       }
       return true;
